@@ -1,0 +1,191 @@
+/* ====== 全局样式 ====== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+}
+
+body {
+    color: #fff;
+    overflow-x: hidden;
+    background: #0a0f1a;
+}
+
+/* ====== 背景特效（紫蓝渐变流动） ====== */
+.bg {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 20% 30%, #3b1fff, transparent 60%),
+                radial-gradient(circle at 80% 70%, #00c6ff, transparent 60%);
+    filter: blur(120px);
+    animation: bg-move 12s infinite alternate ease-in-out;
+    z-index: -1;
+}
+
+@keyframes bg-move {
+    0% { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.4) translate(40px, -40px); }
+}
+
+/* ====== 导航栏 ====== */
+.nav {
+    position: fixed;
+    width: 100%;
+    padding: 18px 30px;
+    display: flex;
+    justify-content: space-between;
+    backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #6d84ff;
+}
+
+.menu a {
+    margin-left: 30px;
+    font-size: 16px;
+    color: #ffffffcc;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.menu a:hover {
+    color: #fff;
+}
+
+/* ====== Hero 区域 ====== */
+.hero {
+    text-align: center;
+    padding-top: 160px;
+    padding-bottom: 120px;
+    animation: fade-in 1.2s ease;
+}
+
+.title {
+    font-size: 54px;
+    margin-bottom: 20px;
+}
+
+.title span {
+    background: linear-gradient(to right, #7a5bff, #00d8ff);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #cbd5ff;
+    line-height: 1.6;
+}
+
+.enter-btn {
+    margin-top: 40px;
+}
+
+.enter-btn a {
+    padding: 14px 34px;
+    background: linear-gradient(135deg, #7a5bff, #00d8ff);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 18px;
+    text-decoration: none;
+    transition: .3s;
+}
+
+.enter-btn a:hover {
+    transform: scale(1.05);
+}
+
+/* ====== 小游戏卡片区域 ====== */
+.games-section {
+    padding: 120px 20px;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.section-desc {
+    margin-bottom: 40px;
+    color: #b4c5ff;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 40px;
+    padding: 0 40px;
+}
+
+/* 3D 卡片效果 */
+.game-card {
+    height: 180px;
+    border-radius: 18px;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, .15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .35s;
+    transform-style: preserve-3d;
+}
+
+.game-card:hover {
+    transform: translateY(-10px) scale(1.04) rotateX(8deg);
+    box-shadow: 0 20px 40px rgba(0,0,0,.3);
+}
+
+.card-content h3 {
+    color: #fff;
+    font-size: 22px;
+}
+
+.card-content p {
+    color: #bcd0ff;
+    margin-top: 6px;
+}
+
+/* ====== 关于我 ====== */
+.about-section {
+    padding: 120px 30px;
+    text-align: center;
+}
+
+.about-box {
+    margin: auto;
+    max-width: 700px;
+    background: rgba(255,255,255,0.08);
+    padding: 30px 40px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.12);
+    line-height: 1.8;
+    backdrop-filter: blur(10px);
+}
+
+/* ====== 页脚 ====== */
+.footer {
+    margin-top: 100px;
+    padding: 20px;
+    text-align: center;
+    opacity: .6;
+}
+
+/* ====== 淡入动画 ====== */
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
