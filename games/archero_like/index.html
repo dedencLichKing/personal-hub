@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>代码飞升：全栈修仙传</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>问道：凡人修仙</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
@@ -10,65 +11,90 @@
 <div id="game-container">
     <canvas id="gameCanvas"></canvas>
 
-    <!-- UI 界面 -->
-    <div class="ui-layer">
-        <div class="hud">
-            <div>
-                <div class="bar-box">
-                    <div class="bar-bg"><div id="hp-bar" class="bar-fill"></div></div>
-                    <div class="status-text"><span>HP (精神值)</span><span id="hp-text">100/100</span></div>
+    <!-- 战斗 UI -->
+    <div class="ui-layer" id="hud-layer">
+        <!-- 顶部状态栏 -->
+        <div class="hud-top">
+            <!-- 左侧：状态与境界 -->
+            <div class="player-status">
+                <div class="avatar-box">
+                    <div class="avatar">🤺</div>
+                    <div class="realm-badge" id="realm-display">练气初期</div>
                 </div>
-                <div class="bar-box">
-                    <div class="bar-bg"><div id="exp-bar" class="bar-fill"></div></div>
-                    <div class="status-text"><span>KPI (绩效)</span><span id="exp-text">0%</span></div>
+                <div class="bars">
+                    <div class="bar-box hp-box">
+                        <div class="bar-bg"><div id="hp-bar" class="bar-fill"></div></div>
+                        <span id="hp-text">100/100</span>
+                    </div>
+                    <div class="bar-box exp-box">
+                        <div class="bar-bg"><div id="exp-bar" class="bar-fill"></div></div>
+                        <span id="exp-text">修为 0%</span>
+                    </div>
                 </div>
             </div>
-            <div style="text-align: right;">
-                <div id="score-display" style="color: #ffd700; font-size: 20px;">BUGS: 0</div>
-                <div id="lvl-display" style="font-size: 14px; color: #00ffff; margin-top: 5px;">实习生</div>
+
+            <!-- 中间：倒计时 -->
+            <div class="timer-box">
+                <span id="game-timer">15:00</span>
+                <div class="wave-info" id="wave-display">第一波: 妖兽初现</div>
+            </div>
+
+            <!-- 右侧：击杀与剑心 -->
+            <div class="combat-stats">
+                <div class="stat-row">击杀: <span id="kill-count">0</span></div>
+                <div class="stat-row sword-heart">剑心: <span id="sword-stack">0</span>层</div>
             </div>
         </div>
-        <div class="controls">
-            ESC 暂停 | 鼠标左键 暂停 | WASD/方向键 移动
+
+        <!-- 底部：技能栏 (示意) -->
+        <div class="hud-bottom">
+            <div class="active-skills" id="active-skills-list">
+                <!-- 动态生成技能图标 -->
+            </div>
+            <div class="controls-hint">
+                WASD 移动 | 自动攻击
+            </div>
         </div>
     </div>
 
     <!-- 1. 门派选择 (开始界面) -->
     <div id="select-screen" class="modal-overlay">
-        <div class="modal-content">
-            <h1>请选择技术栈</h1>
-            <p>不同的选择，将面对不同的 Bug 与 命运。</p>
+        <div class="modal-content faction-select-modal">
+            <h1>请选择宗门</h1>
+            <p class="subtitle">修仙之路，始于足下</p>
 
             <div class="faction-container">
-                <!-- 前端 -->
-                <div class="faction-card" onclick="Game.start('web')">
-                    <span class="f-icon">🎨</span>
-                    <span class="f-title">前端开发</span>
-                    <span class="f-desc">
-                        武器: Console.log<br>
-                        特点: 攻速极快，但身板脆<br>
-                        宿敌: 兼容性报错
-                    </span>
+                <!-- 蜀山 -->
+                <div class="faction-card active" onclick="Game.start('shushan')">
+                    <div class="f-visual">⚔️</div>
+                    <div class="f-info">
+                        <span class="f-title">蜀山剑派</span>
+                        <span class="f-tag">御剑 • 爆发</span>
+                        <div class="f-desc">
+                            <p><strong>核心：剑心 & 飞剑</strong></p>
+                            <p>积累剑心提升暴击，操控飞剑自动杀敌。</p>
+                            <p><i>"御剑乘风来，除魔天地间"</i></p>
+                        </div>
+                    </div>
                 </div>
-                <!-- 后端 -->
-                <div class="faction-card" onclick="Game.start('java')">
-                    <span class="f-icon">☕</span>
-                    <span class="f-title">后端架构</span>
-                    <span class="f-desc">
-                        武器: SQL 注入<br>
-                        特点: 伤害高，范围大<br>
-                        宿敌: 数据库死锁
-                    </span>
+                <!-- 其他门派 (未开放) -->
+                <div class="faction-card locked" onclick="alert('【青城玄门】正在闭关推演中，敬请期待！')">
+                    <div class="f-visual">📜</div>
+                    <div class="f-info">
+                        <span class="f-title">青城玄门</span>
+                        <span class="f-tag">符箓 • 召唤</span>
+                        <div class="f-desc">正在加急制作中...</div>
+                    </div>
+                    <div class="lock-overlay">🔒 未开放</div>
                 </div>
-                <!-- 移动端 -->
-                <div class="faction-card" onclick="Game.start('mobile')">
-                    <span class="f-icon">📱</span>
-                    <span class="f-title">移动终端</span>
-                    <span class="f-desc">
-                        武器: HotFix 补丁<br>
-                        特点: 初始多弹道，移速快<br>
-                        宿敌: 闪退 Crash
-                    </span>
+                <div class="faction-card locked" onclick="alert('【血煞魔宗】正在闭关推演中，敬请期待！')">
+                    <div class="f-visual">🩸</div>
+                    <div class="f-info">
+                        <span class="f-title">血煞魔宗</span>
+                        <span class="f-tag">嗜血 • 狂战</span>
+                        <div class="f-desc">正在加急制作中...</div>
+                    </div>
+                    <div class="lock-overlay">🔒 未开放</div>
                 </div>
             </div>
         </div>
@@ -77,33 +103,62 @@
     <!-- 2. 暂停菜单 -->
     <div id="pause-screen" class="modal-overlay hidden">
         <div class="modal-content">
-            <h2>摸鱼中...</h2>
-            <button class="btn" onclick="Game.togglePause()">继续工作</button>
-            <button class="btn" style="background:#ff4d4d; color:white;" onclick="location.reload()">删库跑路 (重开)</button>
+            <h2>冥想中...</h2>
+            <button class="btn" onclick="Game.togglePause()">继续修行</button>
+            <button class="btn btn-danger" onclick="location.reload()">兵解重修 (重开)</button>
         </div>
     </div>
 
-    <!-- 3. 升级选择 -->
+    <!-- 3. 升级/突破选择 -->
     <div id="upgrade-screen" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h2>职级晋升！</h2>
-            <p>绩效考核达标，获得新的技术能力：</p>
-            <div class="faction-container" id="skill-container">
-                <!-- JS 生成 -->
+        <div class="modal-content upgrade-modal">
+            <h2 id="upgrade-title">境界突破！</h2>
+            <p id="upgrade-desc">感悟天道，请选择一项机缘：</p>
+            <div class="cards-container" id="skill-container">
+                <!-- JS 生成卡牌 -->
             </div>
         </div>
     </div>
 
-    <!-- 4. 死亡结算 -->
+    <!-- 4. 结算界面 -->
     <div id="game-over-screen" class="modal-overlay hidden">
         <div class="modal-content">
-            <h1 style="color: #ff4d4d;">35岁危机 (Game Over)</h1>
-            <p>你被 Bug 淹没了，精神值耗尽。</p>
-            <div style="margin: 20px 0; font-size: 18px;">
-                最终职位: <span id="end-lvl" style="color:#00ffff">--</span><br>
-                修复 Bugs: <span id="end-score" style="color:#ffd700">--</span>
+            <h1 id="end-title" style="color: #ff4d4d;">道消身殒</h1>
+            <p id="end-reason">你的修仙之路到此为止。</p>
+            <div class="end-stats">
+                <div class="stat-box">
+                    <span class="label">最终境界</span>
+                    <span class="value" id="end-realm">--</span>
+                </div>
+                <div class="stat-box">
+                    <span class="label">存活时间</span>
+                    <span class="value" id="end-time">--</span>
+                </div>
+                <div class="stat-box">
+                    <span class="label">击杀妖兽</span>
+                    <span class="value" id="end-kills">--</span>
+                </div>
             </div>
-            <button class="btn" onclick="location.reload()">投递简历 (重开)</button>
+            <button class="btn" onclick="location.reload()">重入轮回</button>
+        </div>
+    </div>
+    
+    <!-- 5. 通关界面 -->
+    <div id="victory-screen" class="modal-overlay hidden">
+         <div class="modal-content" style="border-color: gold; box-shadow: 0 0 50px gold;">
+            <h1 style="color: gold;">渡劫飞升!</h1>
+            <p>你已斩尽心魔，破碎虚空，位列仙班！</p>
+             <div class="end-stats">
+                <div class="stat-box">
+                    <span class="label">最终境界</span>
+                    <span class="value" id="vic-realm">真仙</span>
+                </div>
+                <div class="stat-box">
+                    <span class="label">耗时</span>
+                    <span class="value" id="vic-time">--</span>
+                </div>
+            </div>
+            <button class="btn" onclick="location.reload()">再造乾坤</button>
         </div>
     </div>
 </div>
@@ -111,5 +166,3 @@
 <script src="./js/game.js"></script>
 </body>
 </html>
-
-
