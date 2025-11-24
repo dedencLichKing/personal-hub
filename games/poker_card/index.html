@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>党国将领卡牌图鉴</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>党国将领卡牌图鉴 (1949版)</h1>
+            <p class="subtitle">国民党将领扑克天梯榜</p>
+        </header>
+
+        <nav class="controls">
+            <button id="view-ladder" class="btn active">天梯视图</button>
+            <button id="view-faction" class="btn">派系视图</button>
+            <button id="btn-flip-all" class="btn">一键全翻</button>
+            <button id="mode-battle" class="btn btn-special">随机对决</button>
+        </nav>
+
+        <!-- 对决区域 (默认隐藏) -->
+        <section id="battle-arena" class="hidden">
+            <div class="battle-stage">
+                <div class="battle-card-slot" id="player-card">
+                    <div class="card-placeholder">点击开始</div>
+                </div>
+                <div class="vs-badge">VS</div>
+                <div class="battle-card-slot" id="enemy-card">
+                    <div class="card-placeholder">随机匹配</div>
+                </div>
+            </div>
+            <div class="battle-result" id="battle-result"></div>
+            <button id="btn-draw" class="btn btn-action">抽取卡牌</button>
+            <button id="btn-close-battle" class="btn btn-secondary">返回图鉴</button>
+        </section>
+
+        <!-- 图鉴区域 -->
+        <main id="gallery-container">
+            <!-- 内容由 JS 动态生成 -->
+        </main>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div id="card-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-card-display"></div>
+            <div class="modal-info">
+                <h2 id="modal-name"></h2>
+                <h3 id="modal-title"></h3>
+                <p id="modal-desc"></p>
+                <div class="modal-tags">
+                    <span id="modal-rank" class="tag"></span>
+                    <span id="modal-suit" class="tag"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
