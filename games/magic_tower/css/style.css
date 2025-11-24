@@ -1,129 +1,139 @@
+/* --- 全局设置 --- */
 body {
-    background-color: #1a1a1a;
-    color: white;
-    font-family: "Courier New", Courier, monospace; /* 复古字体 */
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-    user-select: none;
+    background-color: #121212; color: #eee;
+    font-family: "Microsoft YaHei", sans-serif;
+    margin: 0; display: flex; justify-content: center; align-items: center;
+    height: 100vh; overflow: hidden; user-select: none;
 }
 
-/* --- 开场动画 --- */
+/* --- 开场：羊皮纸 --- */
 #intro-screen {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: black;
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95); z-index: 200;
+    display: flex; justify-content: center; align-items: center;
 }
-.story-container {
-    width: 60%;
-    text-align: center;
-    overflow: hidden;
-    height: 80%;
-    position: relative;
+.parchment {
+    width: 450px; padding: 40px;
+    background: #f4e4bc; /* 羊皮纸色 */
+    border: 12px solid #5a3a22;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8) inset;
+    text-align: center; color: #462c18; cursor: pointer;
+    border-radius: 5px;
 }
-.scrolling-text {
-    position: absolute;
-    width: 100%;
-    animation: scrollUp 10s linear infinite;
-}
-@keyframes scrollUp {
-    0% { top: 100%; }
-    100% { top: -50%; }
-}
+.parchment h1 { border-bottom: 2px solid #5a3a22; padding-bottom: 15px; margin-bottom: 20px; }
+.story-text { font-size: 16px; line-height: 1.8; font-weight: bold; }
+.blink { animation: blink 1s infinite; color: #b22222; margin-top: 30px; font-weight: 900; }
+@keyframes blink { 50% { opacity: 0.2; } }
 
 /* --- 游戏主界面 --- */
 #game-container {
-    display: flex;
-    border: 4px solid #555;
-    background-color: #000;
-    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    display: flex; border: 4px solid #666; background-color: #000;
+    box-shadow: 0 0 40px #000;
+}
+.main-window { width: 416px; height: 416px; background: #000; position: relative; }
+#game-map { display: grid; grid-template-columns: repeat(13, 32px); grid-template-rows: repeat(13, 32px); }
+
+/* =========================================================
+   内嵌 SVG 素材 (无需下载图片，永不404)
+   ========================================================= */
+
+.cell { width: 32px; height: 32px; box-sizing: border-box; }
+
+/* 1. 地形 */
+.bg-floor { 
+    background-color: #2b2b2b; 
+    border: 1px solid #333; /* 简单的地砖效果 */
+}
+.bg-wall {
+    /* 砖块 SVG */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%238B4513'/%3E%3Cpath d='M0 0h32v1H0zm0 16h32v1H0zM16 0v16M8 16v16M24 16v16' stroke='%23a0522d' stroke-width='2'/%3E%3C/svg%3E");
+}
+.bg-stairs {
+    /* 条纹楼梯 SVG */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect width='32' height='32' fill='%23555'/%3E%3Cpath d='M0 5h32M0 10h32M0 15h32M0 20h32M0 25h32' stroke='%23aaa' stroke-width='2'/%3E%3C/svg%3E");
 }
 
-/* 地图区域：经典13x13格子 */
-.main-window {
-    width: 520px; /* 13 * 40px */
-    height: 520px;
-}
-#game-map {
-    display: grid;
-    grid-template-columns: repeat(13, 40px);
-    grid-template-rows: repeat(13, 40px);
+/* 2. 门 */
+.door-y { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23444'/%3E%3Crect x='2' y='2' width='28' height='28' fill='%23ffd700' stroke='%23b8860b' stroke-width='3'/%3E%3Ccircle cx='24' cy='16' r='3' fill='black'/%3E%3C/svg%3E"); }
+.door-b { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23444'/%3E%3Crect x='2' y='2' width='28' height='28' fill='%2300bfff' stroke='%23008b8b' stroke-width='3'/%3E%3Ccircle cx='24' cy='16' r='3' fill='black'/%3E%3C/svg%3E"); }
+.door-r { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23444'/%3E%3Crect x='2' y='2' width='28' height='28' fill='%23ff4500' stroke='%238b0000' stroke-width='3'/%3E%3Ccircle cx='24' cy='16' r='3' fill='black'/%3E%3C/svg%3E"); }
+
+/* 3. 勇士 */
+.hero-icon {
+    /* 骑士头盔 SVG */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23ddd' stroke='%23333' stroke-width='2'/%3E%3Cpath d='M8 12h16v6H8z' fill='%23333'/%3E%3Cpath d='M16 2l-4 8h8z' fill='%23d00'/%3E%3C/svg%3E");
+    z-index: 10;
 }
 
-/* 单个格子样式 */
-.cell {
-    width: 40px;
-    height: 40px;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px; /* Emoji大小 */
-    cursor: pointer;
-}
+/* 4. 物品 */
+.item-bg { background-size: cover; }
+.i-key-y { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 24a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm4-6h14v4h-4v4h-4v-4h-2v-4z' fill='%23ffd700' stroke='%23b8860b' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-key-b { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 24a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm4-6h14v4h-4v4h-4v-4h-2v-4z' fill='%2300bfff' stroke='%23008b8b' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-key-r { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 24a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm4-6h14v4h-4v4h-4v-4h-2v-4z' fill='%23ff4500' stroke='%238b0000' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-gem-atk { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L28 16 16 30 4 16z' fill='%23f00' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-gem-def { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 6h20v20H6z' fill='%2300f' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-potion-r { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 12h12v16H10z' fill='%23f55'/%3E%3Cpath d='M12 6h8v6h-8z' fill='%23fff'/%3E%3C/svg%3E"); }
+.i-potion-b { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 12h12v16H10z' fill='%2355f'/%3E%3Cpath d='M12 6h8v6h-8z' fill='%23fff'/%3E%3C/svg%3E"); }
+.i-sword { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M14 2h4v20h-4z' fill='%23ccc'/%3E%3Cpath d='M10 22h12v4H10z' fill='%23850'/%3E%3C/svg%3E"); }
+.i-shield { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 6h20v14l-10 10-10-10z' fill='%23aaa' stroke='%23555'/%3E%3C/svg%3E"); }
 
-/* --- 材质 (用CSS模拟) --- */
-.wall { background-color: #764d25; border: 1px solid #58391b; } /* 墙 */
-.floor { background-color: #333; border: 1px solid #222; } /* 地板 */
-.hero { background-color: transparent; z-index: 10; animation: breathe 1s infinite alternate; }
+/* 5. 怪物 (重点：用 SVG 绘制不同颜色和形状) */
+.m-slime-g { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 20q0-10 12-10t12 10v8H4z' fill='%233e3'/%3E%3Ccircle cx='10' cy='18' r='2' fill='black'/%3E%3Ccircle cx='22' cy='18' r='2' fill='black'/%3E%3C/svg%3E"); }
+.m-slime-r { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 20q0-10 12-10t12 10v8H4z' fill='%23e33'/%3E%3Ccircle cx='10' cy='18' r='2' fill='black'/%3E%3Ccircle cx='22' cy='18' r='2' fill='black'/%3E%3C/svg%3E"); }
+.m-bat { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 10l14 8 14-8-4 14-10-4-10 4z' fill='%23555'/%3E%3Ccircle cx='12' cy='16' r='1' fill='red'/%3E%3Ccircle cx='20' cy='16' r='1' fill='red'/%3E%3C/svg%3E"); }
+.m-mage { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 30L16 4l6 26z' fill='%2380f'/%3E%3Ccircle cx='16' cy='12' r='4' fill='%23fdb'/%3E%3C/svg%3E"); }
+.m-skeleton { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='10' r='8' fill='%23eee'/%3E%3Crect x='14' y='18' width='4' height='12' fill='%23eee'/%3E%3Ccircle cx='13' cy='10' r='2' fill='black'/%3E%3Ccircle cx='19' cy='10' r='2' fill='black'/%3E%3C/svg%3E"); }
+.m-orc { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='4' width='24' height='24' fill='%23282' rx='5'/%3E%3Cpath d='M6 14h6v4H6z' fill='white'/%3E%3C/svg%3E"); }
+.m-boss { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 10l6-8 8 6 8-6 6 8v20H2z' fill='%23800'/%3E%3Ccircle cx='10' cy='16' r='3' fill='yellow'/%3E%3Ccircle cx='22' cy='16' r='3' fill='yellow'/%3E%3Cpath d='M8 24h16v4H8z' fill='black'/%3E%3C/svg%3E"); }
 
-/* 各种物品颜色/图标 */
-.door-yellow { background-color: #8B8000; border: 2px solid yellow; }
-.door-blue { background-color: #00008B; border: 2px solid cyan; }
-.monster { position: relative; }
+/* 通用怪物样式 */
+.monster-icon { background-size: contain; background-repeat: no-repeat; cursor: crosshair; }
 
-@keyframes breathe {
-    from { transform: scale(0.9); }
-    to { transform: scale(1.1); }
-}
+/* --- UI 侧边栏 --- */
+.ui-sidebar { width: 220px; background: #2a2a2a; padding: 10px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; border-left: 2px solid #444; }
+.panel-box { background: #333; padding: 8px; border-radius: 4px; border: 1px solid #555; }
+.panel-title { text-align: center; color: #ffd700; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #555; padding-bottom: 3px; }
 
-/* --- 侧边栏 --- */
-.ui-sidebar {
-    width: 200px;
-    background-color: #2a2a2a;
-    padding: 20px;
-    border-left: 4px solid #555;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.panel-title { font-size: 18px; font-weight: bold; color: #ffd700; margin-bottom: 10px; text-align: center; }
-.stat-row { display: flex; justify-content: space-between; font-size: 14px; }
-.hp-text { color: #ff5555; }
-.gold-text { color: #ffd700; }
-.key-row { display: flex; align-items: center; gap: 10px; }
-.key-icon.yellow { color: yellow; }
-.key-icon.blue { color: cyan; }
-.key-icon.red { color: red; }
+.stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; align-items: center; }
+.val-hp { color: #ff6666; font-weight: bold; }
+.val-atk { color: #aaaaff; }
+.val-def { color: #aaffaa; }
+.val-gold { color: #ffd700; }
 
-#message-box {
-    margin-top: auto;
-    border: 1px dashed #666;
-    padding: 10px;
-    font-size: 12px;
-    color: #aaa;
-    height: 100px;
-    overflow-y: auto;
-}
+.key-list { display: flex; justify-content: space-between; }
+.key-slot { display: flex; align-items: center; gap: 5px; font-weight: bold; }
+.icon-key { width: 16px; height: 16px; background-size: cover; }
+.icon-key.key-y { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 24a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm4-6h14v4h-4v4h-4v-4h-2v-4z' fill='%23ffd700'/%3E%3C/svg%3E"); }
+.icon-key.key-b { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 24a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm4-6h14v4h-4v4h-4v-4h-2v-4z' fill='%2300bfff'/%3E%3C/svg%3E"); }
+.icon-key.key-r { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 24a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm4-6h14v4h-4v4h-4v-4h-2v-4z' fill='%23ff4500'/%3E%3C/svg%3E"); }
 
-/* --- 弹窗 --- */
-.modal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 200;
-}
-.hidden { display: none; }
-.modal-content {
-    background: #333; border: 2px solid white; padding: 20px; width: 300px;
-    text-align: center;
-}
-.prediction { font-weight: bold; margin-top: 10px; }
+#info-content { font-size: 12px; line-height: 1.4; color: #ccc; }
+.danger { color: #f00; font-weight: bold; } .safe { color: #0f0; }
+
+#message-box { margin-top: auto; padding: 5px; border: 1px dashed #555; height: 80px; overflow-y: auto; color: #888; font-size: 12px; }
+
+/* --- 战斗系统 --- */
+#battle-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; display: flex; justify-content: center; align-items: center; }
+.hidden { display: none !important; }
+
+.battle-window { width: 380px; background: #222; border: 4px ridge #d4af37; padding: 20px; box-shadow: 0 0 50px #d4af37; text-align: center; }
+.battle-title { color: #d4af37; font-size: 24px; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 0 #000; }
+.battle-arena { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+.fighter-col { width: 100px; position: relative; }
+.big-fighter { width: 64px; height: 64px; margin: 0 auto; transform: scale(1.5); background-size: cover; background-repeat: no-repeat; }
+.vs-tag { font-size: 32px; font-weight: 900; color: #555; font-style: italic; }
+
+.hp-bar-container { width: 100%; height: 8px; background: #555; margin-top: 10px; border-radius: 2px; }
+.hp-bar-fill { height: 100%; width: 100%; background: #0f0; transition: width 0.2s; }
+.hp-bar-fill.enemy { background: #f00; }
+
+.fighter-name { font-weight: bold; margin-top: 5px; font-size: 14px; }
+.hp-num { font-family: monospace; font-size: 16px; color: #fff; }
+
+/* 飘字动画 */
+.dmg-popup { position: absolute; top: 0; left: 50%; color: #fff; font-weight: bold; font-size: 20px; opacity: 0; text-shadow: 1px 1px 0 red; pointer-events: none; }
+.pop-anim { animation: popUp 0.6s ease-out; }
+@keyframes popUp { 0% { top: 0; opacity: 1; transform: translateX(-50%) scale(1); } 100% { top: -40px; opacity: 0; transform: translateX(-50%) scale(1.5); } }
+.shake { animation: shake 0.2s; }
+@keyframes shake { 0%, 100% { transform: scale(1.5) translateX(0); } 25% { transform: scale(1.5) translateX(-3px); } 75% { transform: scale(1.5) translateX(3px); } }

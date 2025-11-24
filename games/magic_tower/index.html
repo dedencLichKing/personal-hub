@@ -3,63 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>经典魔塔 - 10层试炼</title>
+    <title>经典魔塔 - 勇者试炼 (内嵌素材版)</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
 
-    <!-- 1. 开场故事背景 -->
+    <!-- 开场界面 -->
     <div id="intro-screen">
-        <div class="story-container">
-            <div class="scrolling-text">
-                <h1>魔塔：古老的誓约</h1>
-                <p>纪元 1204年，艾尔迪亚大陆...</p>
-                <p>黑暗领主苏醒，将公主囚禁于无尽之塔。</p>
-                <p>你是王国最后的希望，一位年轻的皇家骑士。</p>
-                <p>传说塔中藏有无尽的宝藏，也有致命的怪物。</p>
-                <p>拿起你的剑，勇士。</p>
-                <p>为了荣耀，为了誓言...</p>
-                <p>（点击任意处开始冒险）</p>
+        <div class="parchment">
+            <h1>🏰 魔塔：永恒誓约</h1>
+            <div class="story-text">
+                <p>黑暗纪元 2024...</p>
+                <p>魔王 <strong>佐斯</strong> 将公主封印于塔顶。</p>
+                <p>你是最后的皇家骑士。</p>
+                <p>塔内危机四伏，你需要计算每一步。</p>
+                <p>生命、攻击、防御、钥匙...</p>
+                <p>缺一不可。</p>
+                <p class="blink">>>> 点击开始冒险 <<<</p>
             </div>
         </div>
     </div>
 
+    <!-- 战斗弹窗 -->
+    <div id="battle-screen" class="hidden">
+        <div class="battle-window">
+            <div class="battle-title">⚔️ 战斗开始 ⚔️</div>
+            <div class="battle-arena">
+                <!-- 勇士 -->
+                <div class="fighter-col">
+                    <div id="battle-hero-img" class="big-fighter hero-icon">
+                        <div id="hero-dmg-float" class="dmg-popup"></div>
+                    </div>
+                    <div class="hp-bar-container"><div id="battle-hero-hp-bar" class="hp-bar-fill"></div></div>
+                    <div class="fighter-name" style="color:#aaf">勇士</div>
+                    <div id="battle-hero-hp" class="hp-num">1000</div>
+                </div>
+
+                <div class="vs-tag">VS</div>
+
+                <!-- 怪物 -->
+                <div class="fighter-col">
+                    <div id="battle-monster-img" class="big-fighter">
+                        <div id="monster-dmg-float" class="dmg-popup"></div>
+                    </div>
+                    <div class="hp-bar-container"><div id="battle-monster-hp-bar" class="hp-bar-fill enemy"></div></div>
+                    <div id="battle-monster-name" class="fighter-name" style="color:#faa">怪物</div>
+                    <div id="battle-monster-hp" class="hp-num">100</div>
+                </div>
+            </div>
+            <div id="battle-log">准备战斗...</div>
+        </div>
+    </div>
+
+    <!-- 游戏主容器 -->
     <div id="game-container" style="display: none;">
-        <!-- 2. 左侧：游戏地图区域 (13x13格子) -->
+        <!-- 左侧：地图 -->
         <div class="main-window">
             <div id="game-map"></div>
         </div>
 
-        <!-- 3. 右侧：状态面板 -->
+        <!-- 右侧：数据栏 -->
         <div class="ui-sidebar">
-            <div class="panel-title">勇士状态</div>
-            <div class="stat-row"><span>层数:</span> <span id="ui-floor">0</span></div>
-            <div class="stat-row"><span>生命 (HP):</span> <span id="ui-hp" class="hp-text">1000</span></div>
-            <div class="stat-row"><span>攻击 (ATK):</span> <span id="ui-atk">10</span></div>
-            <div class="stat-row"><span>防御 (DEF):</span> <span id="ui-def">10</span></div>
-            <div class="stat-row"><span>金币 ($):</span> <span id="ui-gold" class="gold-text">0</span></div>
-            <div class="stat-row"><span>经验 (EXP):</span> <span id="ui-exp">0</span></div>
-            <hr>
-            <div class="panel-title">钥匙包</div>
-            <div class="key-row"><span class="key-icon yellow">🗝️</span> <span id="ui-key-y">0</span></div>
-            <div class="key-row"><span class="key-icon blue">🗝️</span> <span id="ui-key-b">0</span></div>
-            <div class="key-row"><span class="key-icon red">🗝️</span> <span id="ui-key-r">0</span></div>
-            
-            <div id="message-box">欢迎来到魔塔！<br>方向键移动。<br>点击怪物查看属性。</div>
-        </div>
-    </div>
+            <div class="panel-box">
+                <div class="panel-title">第 <span id="ui-floor" style="color:#fff">1</span> 层</div>
+                
+                <div class="stat-row"><span>💖 生命</span> <span id="ui-hp" class="val-hp">1000</span></div>
+                <div class="stat-row"><span>⚔️ 攻击</span> <span id="ui-atk" class="val-atk">10</span></div>
+                <div class="stat-row"><span>🛡️ 防御</span> <span id="ui-def" class="val-def">10</span></div>
+                <div class="stat-row"><span>💰 金币</span> <span id="ui-gold" class="val-gold">0</span></div>
+                <div class="stat-row"><span>🌟 经验</span> <span id="ui-exp" class="val-exp">0</span></div>
+            </div>
 
-    <!-- 怪物图鉴弹窗 -->
-    <div id="monster-modal" class="modal hidden">
-        <div class="modal-content">
-            <h2 id="m-name">怪物名称</h2>
-            <p>生命: <span id="m-hp"></span></p>
-            <p>攻击: <span id="m-atk"></span></p>
-            <p>防御: <span id="m-def"></span></p>
-            <p>金币: <span id="m-gold"></span> / 经验: <span id="m-exp"></span></p>
-            <hr>
-            <p id="m-prediction" class="prediction"></p>
-            <button onclick="closeModal()">关闭</button>
+            <div class="panel-box">
+                <div class="panel-title">钥匙包</div>
+                <div class="key-list">
+                    <div class="key-slot" style="color:yellow"><div class="icon-key key-y"></div> <span id="ui-key-y">0</span></div>
+                    <div class="key-slot" style="color:cyan"><div class="icon-key key-b"></div> <span id="ui-key-b">0</span></div>
+                    <div class="key-slot" style="color:red"><div class="icon-key key-r"></div> <span id="ui-key-r">0</span></div>
+                </div>
+            </div>
+
+            <!-- 动态信息框 -->
+            <div class="panel-box info-box">
+                <div class="panel-title" style="font-size:12px">怪物预测</div>
+                <div id="info-content">鼠标指向怪物查看</div>
+            </div>
+
+            <div id="message-box">
+                <p>欢迎来到魔塔世界！</p>
+                <p>方向键移动，撞击怪物战斗。</p>
+            </div>
         </div>
     </div>
 
