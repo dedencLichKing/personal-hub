@@ -1,5 +1,5 @@
 /* =========================================================
-   经典魔塔 - 勇者试炼 (Emoji楼梯版)
+   经典魔塔 - 勇者试炼 (修复版)
    ========================================================= */
 
 const ID = {
@@ -16,7 +16,7 @@ const ID = {
     GHOST: 48, VAMPIRE: 49, BOSS: 99
 };
 
-// 资源映射 (注意：这里不再映射楼梯，因为楼梯在 render 中特殊处理了)
+// 资源映射
 const ASSET_CLASS = {
     [ID.WALL]: 'bg-wall', 
     [ID.EMPTY]: 'bg-floor',
@@ -49,7 +49,7 @@ let maps = [];
 
 function initMaps() {
     maps = [];
-    // Level 1: (1,1) 是上楼
+    // Level 1: 上楼梯在 (1,1)
     maps.push([
         [1,1,1,1,1,1,1,1,1,1,1,1,1],
         [1,M.STAIR_UP,1,M.GEM_ATK,0,M.SLIME_G,0,M.KEY_Y,1,0,0,0,1],
@@ -65,7 +65,7 @@ function initMaps() {
         [1,0,0,0,0,0,M.HERO,0,0,0,0,0,1], 
         [1,1,1,1,1,1,1,1,1,1,1,1,1]
     ]);
-    // Level 2: (1,1) 是下楼
+    // Level 2: 下楼梯在 (1,1)
     maps.push([
         [1,1,1,1,1,1,1,1,1,1,1,1,1],
         [1,M.STAIR_DOWN,0,M.DOOR_Y,M.GEM_DEF,0,0,0,M.BAT,0,1,M.STAIR_UP,1],
@@ -128,40 +128,36 @@ function render() {
             const cell = document.createElement('div');
             cell.classList.add('cell');
             
-            // 1. 地形背景
+            // 地板
             if(id === M.WALL) cell.classList.add('bg-wall');
             else cell.classList.add('bg-floor');
 
-            // 2. 核心渲染逻辑
+            // 渲染层
             if (x === hero.x && y === hero.y) {
-                // 勇士
                 const heroDiv = document.createElement('div');
                 heroDiv.classList.add('cell', 'hero-icon');
                 cell.appendChild(heroDiv);
             } 
             else if (id !== M.EMPTY && id !== M.WALL) {
-                // 如果是楼梯 -> 插入 Emoji (关键修改)
-                if (id === M.STAIR_UP) {
-                    const stair = document.createElement('div');
-                    stair.classList.add('cell', 'stair-emoji');
-                    stair.innerText = '⬆️'; 
-                    cell.appendChild(stair);
-                } 
-                else if (id === M.STAIR_DOWN) {
-                    const stair = document.createElement('div');
-                    stair.classList.add('cell', 'stair-emoji');
-                    stair.innerText = '⬇️'; 
-                    cell.appendChild(stair);
+                // Emoji 楼梯
+                if(id === M.STAIR_UP) {
+                    const s = document.createElement('div');
+                    s.className = 'cell stair-emoji'; s.innerText = '⬆️';
+                    cell.appendChild(s);
+                } else if (id === M.STAIR_DOWN) {
+                    const s = document.createElement('div');
+                    s.className = 'cell stair-emoji'; s.innerText = '⬇️';
+                    cell.appendChild(s);
                 }
-                // 如果是怪物
-                else if (id >= 40) {
+                // 怪物
+                else if(id >= 40) { 
                     const itemDiv = document.createElement('div');
                     itemDiv.classList.add('cell', 'monster-icon');
                     if(MONSTERS[id]) itemDiv.classList.add(MONSTERS[id].cls);
                     itemDiv.onclick = (e) => { e.stopPropagation(); openDetailModal(id); };
                     cell.appendChild(itemDiv);
-                }
-                // 如果是物品 (ID < 40 且不是楼梯)
+                } 
+                // 物品
                 else {
                     const itemDiv = document.createElement('div');
                     itemDiv.classList.add('cell');
@@ -190,7 +186,6 @@ function updateUI() {
     document.getElementById('ui-key-r').innerText = hero.keys.r;
 }
 
-// --- 弹窗逻辑 ---
 function openDetailModal(mid) {
     if(isBattling) return;
     const m = MONSTERS[mid];
@@ -229,7 +224,6 @@ function closeDetailModal() {
     document.getElementById('monster-detail-modal').classList.add('hidden');
 }
 
-// --- 移动逻辑 ---
 async function move(dx, dy) {
     if (isBattling) return;
     const tx = hero.x + dx, ty = hero.y + dy;
@@ -241,9 +235,10 @@ async function move(dx, dy) {
     if (tid >= 40) {
         await startBattle(tx, ty, tid);
     } 
+    // --- 修复重点：传送后坐标设置为 (1, 1)，确保不卡在墙里 ---
     else if (tid === M.STAIR_UP) {
         if (hero.floor < 9) {
-            hero.floor++; hero.x = 0; hero.y = 11;
+            hero.floor++; hero.x = 1; hero.y = 1; 
             log(`进入第 ${hero.floor+1} 层`); render();
         } else {
             log("已是顶层");
@@ -251,7 +246,7 @@ async function move(dx, dy) {
     } 
     else if (tid === M.STAIR_DOWN) {
         if (hero.floor > 0) {
-            hero.floor--; hero.x = 0; hero.y = 1;
+            hero.floor--; hero.x = 1; hero.y = 1;
             log(`返回第 ${hero.floor+1} 层`); render();
         }
     } 
