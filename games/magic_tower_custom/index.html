@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魔塔 - 勇者试炼 (完美修复版)</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+    <!-- 开场界面 -->
+    <div id="intro-screen">
+        <div class="parchment">
+            <h1>🏰 魔塔：永恒誓约</h1>
+            <div class="story-text">
+                <p>纪元 1204年，艾尔迪亚大陆...</p>
+          <p>邪恶的魔王占据了一座高耸入云的魔塔，威胁着四周的村庄和城镇。</p>
+          <p>黑暗领主苏醒，将公主囚禁于无尽之塔。</p>
+          <p>你是王国最后的希望，一位年轻的皇家骑士。</p>
+          <p>传说塔中藏有无尽的宝藏，也有致命的怪物。</p>
+          <p>拿起你的剑，勇士。</p>
+          <p>为了荣耀，为了誓言...</p>
+          <br />
+                <p>【操作说明】</p>
+                <p>🎮 <strong>方向键</strong> 移动</p>
+                <p>⚔️ <strong>撞击怪物</strong> 自动战斗</p>
+                <p>🔍 <strong>点击怪物</strong> 查看图鉴</p>
+                <p>🪜 <strong>走到楼梯</strong> 自动上下楼</p>
+                <br>
+                <p class="blink">>>> 点击开始冒险 <<<</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. 战斗弹窗 -->
+    <div id="battle-screen" class="hidden">
+        <div class="battle-window">
+            <div class="battle-title">⚔️ 战斗开始 ⚔️</div>
+            <div class="battle-arena">
+                <div class="fighter-col">
+                    <div id="battle-hero-img" class="big-fighter hero-icon">
+                        <div id="hero-dmg-float" class="dmg-popup"></div>
+                    </div>
+                    <div class="hp-bar-container"><div id="battle-hero-hp-bar" class="hp-bar-fill"></div></div>
+                    <div class="fighter-name" style="color:#aaf">勇士</div>
+                    <div id="battle-hero-hp" class="hp-num">1000</div>
+                </div>
+                <div class="vs-tag">VS</div>
+                <div class="fighter-col">
+                    <div id="battle-monster-img" class="big-fighter">
+                        <div id="monster-dmg-float" class="dmg-popup"></div>
+                    </div>
+                    <div class="hp-bar-container"><div id="battle-monster-hp-bar" class="hp-bar-fill enemy"></div></div>
+                    <div id="battle-monster-name" class="fighter-name" style="color:#faa">怪物</div>
+                    <div id="battle-monster-hp" class="hp-num">100</div>
+                </div>
+            </div>
+            <div id="battle-log">准备战斗...</div>
+        </div>
+    </div>
+
+    <!-- 2. 怪物详情弹窗 -->
+    <div id="monster-detail-modal" class="hidden" onclick="closeDetailModal()">
+        <div class="detail-window" onclick="event.stopPropagation()">
+            <div class="detail-header">怪物图鉴</div>
+            <div class="detail-content">
+                <div class="detail-img-box">
+                    <div id="detail-m-img" class="big-fighter"></div>
+                    <div id="detail-m-name">怪物名</div>
+                </div>
+                <div class="detail-stats">
+                    <div class="d-row"><span>生命:</span> <span id="detail-hp" class="val-hp"></span></div>
+                    <div class="d-row"><span>攻击:</span> <span id="detail-atk" class="val-atk"></span></div>
+                    <div class="d-row"><span>防御:</span> <span id="detail-def" class="val-def"></span></div>
+                    <div class="d-row"><span>金币:</span> <span id="detail-gold" class="val-gold"></span></div>
+                    <div class="d-row"><span>经验:</span> <span id="detail-exp" class="val-exp"></span></div>
+                </div>
+            </div>
+            <div id="detail-prediction" class="prediction-box"></div>
+            <button class="close-btn" onclick="closeDetailModal()">关闭</button>
+        </div>
+    </div>
+
+    <!-- 游戏主容器 -->
+    <div id="game-container" style="display: none;">
+        <!-- 左侧地图 -->
+        <div class="main-window">
+            <div id="game-map"></div>
+        </div>
+
+        <!-- 右侧侧边栏 -->
+        <div class="ui-sidebar">
+            <div class="panel-box stats-box">
+                <div class="panel-title">第 <span id="ui-floor" style="color:#fff">1</span> 层</div>
+                <div class="stat-row"><span>💖 生命</span> <span id="ui-hp" class="val-hp">1000</span></div>
+                <div class="stat-row"><span>⚔️ 攻击</span> <span id="ui-atk" class="val-atk">10</span></div>
+                <div class="stat-row"><span>🛡️ 防御</span> <span id="ui-def" class="val-def">10</span></div>
+                <div class="stat-row"><span>💰 金币</span> <span id="ui-gold" class="val-gold">0</span></div>
+                <div class="stat-row"><span>🌟 经验</span> <span id="ui-exp" class="val-exp">0</span></div>
+            </div>
+
+            <div class="panel-box">
+                <div class="panel-title" style="font-size:12px">钥匙包</div>
+                <div class="key-list">
+                    <div class="key-slot" style="color:yellow"><div class="icon-key key-y"></div> <span id="ui-key-y">0</span></div>
+                    <div class="key-slot" style="color:cyan"><div class="icon-key key-b"></div> <span id="ui-key-b">0</span></div>
+                    <div class="key-slot" style="color:red"><div class="icon-key key-r"></div> <span id="ui-key-r">0</span></div>
+                </div>
+            </div>
+
+            <div id="message-box">
+                <p>欢迎来到魔塔！</p>
+                <p>点击怪物查看详情。</p>
+                <p>走到楼梯口自动传送。</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+/* --- 全局设置 --- */
+body {
+    background-color: #121212; color: #eee;
+    font-family: "Microsoft YaHei", sans-serif;
+    margin: 0; display: flex; justify-content: center; align-items: center;
+    height: 100vh; overflow: hidden; user-select: none;
+}
+
+/* --- 开场 --- */
+#intro-screen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95); z-index: 200;
+    display: flex; justify-content: center; align-items: center;
+}
+.parchment {
+    width: 450px; padding: 40px;
+    background: #f4e4bc; border: 12px solid #5a3a22;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8) inset;
+    text-align: center; color: #462c18; cursor: pointer; border-radius: 5px;
+}
+.parchment h1 { border-bottom: 2px solid #5a3a22; padding-bottom: 15px; margin-bottom: 20px; }
+.story-text { font-size: 16px; line-height: 1.8; font-weight: bold; }
+.blink { animation: blink 1s infinite; color: #b22222; margin-top: 30px; font-weight: 900; }
+@keyframes blink { 50% { opacity: 0.2; } }
+
+/* --- 游戏主容器 --- */
+#game-container {
+    display: flex; 
+    border: 4px solid #666; background-color: #000;
+    box-shadow: 0 0 50px #000;
+    width: 680px; height: 440px; 
+    padding: 10px; gap: 10px;
+}
+
+/* 左侧地图 */
+.main-window { 
+    width: 416px; height: 416px; 
+    background: #000; position: relative; 
+    flex-shrink: 0; border: 2px solid #333;
+}
+#game-map { display: grid; grid-template-columns: repeat(13, 32px); grid-template-rows: repeat(13, 32px); }
+
+/* --- 素材设置 --- */
+.cell { width: 32px; height: 32px; box-sizing: border-box; position: relative; }
+.bg-floor { background-color: #2b2b2b; border: 1px solid #333; }
+.bg-wall { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%238B4513'/%3E%3Cpath d='M0 0h32v1H0zm0 16h32v1H0zM16 0v16M8 16v16M24 16v16' stroke='%23a0522d' stroke-width='2'/%3E%3C/svg%3E"); }
+
+/* --- 楼梯 Emoji 样式 (居中显示) --- */
+.stair-emoji {
+    display: flex; justify-content: center; align-items: center;
+    font-size: 24px; cursor: pointer; line-height: 1; z-index: 5;
+    text-shadow: 0 0 5px #fff;
+}
+
+/* 勇士 */
+.hero-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23ddd' stroke='%23333' stroke-width='2'/%3E%3Cpath d='M8 12h16v6H8z' fill='%23333'/%3E%3Cpath d='M16 2l-4 8h8z' fill='%23d00'/%3E%3C/svg%3E"); z-index: 10; }
+
+/* 物品 & 门 */
+.item-bg { background-size: cover; }
+.i-key-y { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 24a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm4-6h14v4h-4v4h-4v-4h-2v-4z' fill='%23ffd700' stroke='%23b8860b' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-key-b { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 24a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm4-6h14v4h-4v4h-4v-4h-2v-4z' fill='%2300bfff' stroke='%23008b8b' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-key-r { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 24a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm4-6h14v4h-4v4h-4v-4h-2v-4z' fill='%23ff4500' stroke='%238b0000' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-gem-atk { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L28 16 16 30 4 16z' fill='%23f00' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-gem-def { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 6h20v20H6z' fill='%2300f' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E"); }
+.i-potion-r { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 12h12v16H10z' fill='%23f55'/%3E%3Cpath d='M12 6h8v6h-8z' fill='%23fff'/%3E%3C/svg%3E"); }
+.i-potion-b { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 12h12v16H10z' fill='%2355f'/%3E%3Cpath d='M12 6h8v6h-8z' fill='%23fff'/%3E%3C/svg%3E"); }
+.i-sword { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M14 2h4v20h-4z' fill='%23ccc'/%3E%3Cpath d='M10 22h12v4H10z' fill='%23850'/%3E%3C/svg%3E"); }
+.i-shield { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 6h20v14l-10 10-10-10z' fill='%23aaa' stroke='%23555'/%3E%3C/svg%3E"); }
+.door-y { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23444'/%3E%3Crect x='2' y='2' width='28' height='28' fill='%23ffd700' stroke='%23b8860b' stroke-width='3'/%3E%3Ccircle cx='24' cy='16' r='3' fill='black'/%3E%3C/svg%3E"); }
+.door-b { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23444'/%3E%3Crect x='2' y='2' width='28' height='28' fill='%2300bfff' stroke='%23008b8b' stroke-width='3'/%3E%3Ccircle cx='24' cy='16' r='3' fill='black'/%3E%3C/svg%3E"); }
+.door-r { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23444'/%3E%3Crect x='2' y='2' width='28' height='28' fill='%23ff4500' stroke='%238b0000' stroke-width='3'/%3E%3Ccircle cx='24' cy='16' r='3' fill='black'/%3E%3C/svg%3E"); }
+
+/* 怪物 */
+.m-slime-g { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 20q0-10 12-10t12 10v8H4z' fill='%233e3'/%3E%3Ccircle cx='10' cy='18' r='2' fill='black'/%3E%3Ccircle cx='22' cy='18' r='2' fill='black'/%3E%3C/svg%3E"); }
+.m-slime-r { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 20q0-10 12-10t12 10v8H4z' fill='%23e33'/%3E%3Ccircle cx='10' cy='18' r='2' fill='black'/%3E%3Ccircle cx='22' cy='18' r='2' fill='black'/%3E%3C/svg%3E"); }
+.m-bat { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 10l14 8 14-8-4 14-10-4-10 4z' fill='%23555'/%3E%3Ccircle cx='12' cy='16' r='1' fill='red'/%3E%3Ccircle cx='20' cy='16' r='1' fill='red'/%3E%3C/svg%3E"); }
+.m-mage { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M10 30L16 4l6 26z' fill='%2380f'/%3E%3Ccircle cx='16' cy='12' r='4' fill='%23fdb'/%3E%3C/svg%3E"); }
+.m-skeleton { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='10' r='8' fill='%23eee'/%3E%3Crect x='14' y='18' width='4' height='12' fill='%23eee'/%3E%3Ccircle cx='13' cy='10' r='2' fill='black'/%3E%3Ccircle cx='19' cy='10' r='2' fill='black'/%3E%3C/svg%3E"); }
+.m-orc { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='4' width='24' height='24' fill='%23282' rx='5'/%3E%3Cpath d='M6 14h6v4H6z' fill='white'/%3E%3C/svg%3E"); }
+.m-boss { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 10l6-8 8 6 8-6 6 8v20H2z' fill='%23800'/%3E%3Ccircle cx='10' cy='16' r='3' fill='yellow'/%3E%3Ccircle cx='22' cy='16' r='3' fill='yellow'/%3E%3Cpath d='M8 24h16v4H8z' fill='black'/%3E%3C/svg%3E"); }
+
+.monster-icon { background-size: contain; background-repeat: no-repeat; cursor: pointer; }
+
+/* --- UI 侧边栏 --- */
+.ui-sidebar { flex: 1; height: 100%; background: #2a2a2a; display: flex; flex-direction: column; gap: 8px; font-size: 14px; padding: 5px; border-radius: 4px; }
+.panel-box { background: #333; padding: 8px; border-radius: 4px; border: 1px solid #555; }
+.panel-title { text-align: center; color: #ffd700; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #555; padding-bottom: 3px; }
+.stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; align-items: center; }
+.val-hp { color: #ff6666; font-weight: bold; }
+.val-atk { color: #aaaaff; }
+.val-def { color: #aaffaa; }
+.val-gold { color: #ffd700; }
+.key-list { display: flex; justify-content: space-between; }
+.key-slot { display: flex; align-items: center; gap: 5px; font-weight: bold; }
+.icon-key { width: 16px; height: 16px; background-size: cover; }
+
+/* 消息栏 */
+#message-box { flex-grow: 1; margin-top: 5px; padding: 8px; border: 1px dashed #555; background: #222; overflow-y: auto; color: #999; font-size: 12px; line-height: 1.5; }
+#message-box p { margin: 2px 0; border-bottom: 1px solid #333; }
+
+/* --- 弹窗样式 --- */
+#battle-screen, #monster-detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; display: flex; justify-content: center; align-items: center; }
+.hidden { display: none !important; }
+.battle-window { width: 380px; background: #222; border: 4px ridge #d4af37; padding: 20px; box-shadow: 0 0 50px #d4af37; text-align: center; }
+.battle-title { color: #d4af37; font-size: 24px; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 0 #000; }
+.battle-arena { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.fighter-col { width: 100px; position: relative; }
+.big-fighter { width: 64px; height: 64px; margin: 0 auto; transform: scale(1.5); background-size: cover; background-repeat: no-repeat; }
+.vs-tag { font-size: 32px; font-weight: 900; color: #555; font-style: italic; }
+.hp-bar-container { width: 100%; height: 8px; background: #555; margin-top: 10px; border-radius: 2px; }
+.hp-bar-fill { height: 100%; width: 100%; background: #0f0; transition: width 0.2s; }
+.hp-bar-fill.enemy { background: #f00; }
+.fighter-name { font-weight: bold; margin-top: 5px; font-size: 14px; }
+.hp-num { font-family: monospace; font-size: 16px; color: #fff; }
+.dmg-popup { position: absolute; top: 0; left: 50%; color: #fff; font-weight: bold; font-size: 20px; opacity: 0; text-shadow: 1px 1px 0 red; pointer-events: none; }
+.pop-anim { animation: popUp 0.6s ease-out; }
+@keyframes popUp { 0% { top: 0; opacity: 1; transform: translateX(-50%) scale(1); } 100% { top: -40px; opacity: 0; transform: translateX(-50%) scale(1.5); } }
+.shake { animation: shake 0.2s; }
+@keyframes shake { 0%, 100% { transform: scale(1.5) translateX(0); } 25% { transform: scale(1.5) translateX(-3px); } 75% { transform: scale(1.5) translateX(3px); } }
+
+/* 详情窗 */
+.detail-window { width: 320px; background: #2b2b2b; border: 2px solid #888; border-radius: 8px; padding: 15px; box-shadow: 0 0 30px #000; color: white; }
+.detail-header { text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #555; padding-bottom: 8px; }
+.detail-content { display: flex; align-items: center; margin-bottom: 15px; }
+.detail-img-box { width: 100px; text-align: center; }
+#detail-m-name { margin-top: 10px; font-weight: bold; color: #ffd700; }
+.detail-stats { flex: 1; font-size: 14px; line-height: 1.8; padding-left: 20px; border-left: 1px solid #444; }
+.d-row { display: flex; justify-content: space-between; }
+.prediction-box { margin-top: 15px; text-align: center; font-size: 16px; font-weight: bold; padding: 10px; background: #222; border-radius: 4px; }
+.close-btn { display: block; width: 100%; margin-top: 15px; padding: 8px; background: #555; color: white; border: none; cursor: pointer; border-radius: 4px; }
+.close-btn:hover { background: #666; }
+.text-safe { color: #5f5; }
+.text-danger { color: #f55; }
