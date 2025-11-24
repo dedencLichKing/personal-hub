@@ -39,6 +39,11 @@
     - `index.html`：游戏入口
     - `css/style.css`：复古魔塔风格样式
     - `js/script.js`：核心逻辑（地图系统、战斗算法、物品交互）
+  - `poker_card/`：历史题材卡牌图鉴「党国将领风云录」
+    - `index.html`：游戏入口
+    - `css/style.css`：民国档案风格样式（3D翻转、光效）
+    - `js/data.js`：54名将领的结构化数据源
+    - `js/game.js`：天梯展示与 War 对战逻辑
 
 > 说明：随着后续增加更多小项目 / 小游戏，会继续在 `games/` 目录下扩展新的子目录，并在根目录 `index.html` 中增加入口卡片。
 
