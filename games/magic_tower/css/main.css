@@ -1,0 +1,30 @@
+/* --- 全局设置 --- */
+body {
+    background-color: #121212; color: #eee;
+    font-family: "Microsoft YaHei", sans-serif;
+    margin: 0; display: flex; justify-content: center; align-items: center;
+    height: 100vh; overflow: hidden; user-select: none;
+}
+
+canvas {
+    display: none; /* 初始隐藏，由 JS 控制显示 */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5); /* 给画布加一点阴影 */
+    background-color: #fff; /* 防止 canvas 透明 */
+}
+
+/* --- 开场 --- */
+#intro-screen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95); z-index: 200;
+    display: flex; justify-content: center; align-items: center;
+}
+.parchment {
+    width: 450px; padding: 40px;
+    background: #f4e4bc; border: 12px solid #5a3a22;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8) inset;
+    text-align: center; color: #462c18; cursor: pointer; border-radius: 5px;
+}
+.parchment h1 { border-bottom: 2px solid #5a3a22; padding-bottom: 15px; margin-bottom: 20px; }
+.story-text { font-size: 16px; line-height: 1.8; font-weight: bold; }
+.blink { animation: blink 1s infinite; color: #b22222; margin-top: 30px; font-weight: 900; }
+@keyframes blink { 50% { opacity: 0.2; } }

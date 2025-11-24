@@ -1,43 +1,25 @@
 /* =========================================================
-   经典魔塔 - 完整逻辑脚本
+   经典魔塔 - 勇者试炼 (Emoji楼梯版)
    ========================================================= */
 
-// ID 字典
 const ID = {
     EMPTY: 0, WALL: 1, HERO: 2,
     STAIR_UP: 88, STAIR_DOWN: 89,
-    
     KEY_Y: 10, KEY_B: 11, KEY_R: 12,
     POTION_R: 20, POTION_B: 21,
     GEM_ATK: 22, GEM_DEF: 23,
     SWORD: 24, SHIELD: 25,
     DOOR_Y: 30, DOOR_B: 31, DOOR_R: 32,
-    
-    // 怪物
+    // 怪物 ID
     SLIME_G: 40, SLIME_R: 41, BAT: 42, MAGE: 43,
     SKELETON: 44, SKELETON_S: 45, ORC: 46, STONE: 47,
     GHOST: 48, VAMPIRE: 49, BOSS: 99
 };
 
-// 怪物数据 (cls 对应 CSS 中的类名)
-const MONSTERS = {
-    [ID.SLIME_G]: { name: "绿史莱姆", hp: 35, atk: 18, def: 1, gold: 1, exp: 1, cls: "m-slime-g" },
-    [ID.SLIME_R]: { name: "红史莱姆", hp: 60, atk: 25, def: 5, gold: 2, exp: 2, cls: "m-slime-r" },
-    [ID.BAT]:     { name: "小蝙蝠", hp: 100, atk: 35, def: 10, gold: 5, exp: 3, cls: "m-bat" },
-    [ID.MAGE]:    { name: "大法师", hp: 130, atk: 60, def: 5, gold: 10, exp: 5, cls: "m-mage" },
-    [ID.SKELETON]:{ name: "骷髅人", hp: 150, atk: 70, def: 20, gold: 15, exp: 8, cls: "m-skeleton" },
-    [ID.SKELETON_S]:{ name: "骷髅战士", hp: 250, atk: 120, def: 30, gold: 25, exp: 12, cls: "m-skeleton" }, // 复用素材
-    [ID.ORC]:     { name: "兽人", hp: 400, atk: 180, def: 40, gold: 35, exp: 20, cls: "m-orc" },
-    [ID.STONE]:   { name: "石头人", hp: 600, atk: 220, def: 120, gold: 50, exp: 30, cls: "m-boss" }, // 暂借 Boss 素材
-    [ID.GHOST]:   { name: "幽灵", hp: 500, atk: 300, def: 5, gold: 45, exp: 28, cls: "m-mage" },
-    [ID.VAMPIRE]: { name: "吸血鬼", hp: 1200, atk: 550, def: 300, gold: 120, exp: 100, cls: "m-bat" },
-    [ID.BOSS]:    { name: "魔王佐斯", hp: 5000, atk: 999, def: 500, gold: 0, exp: 0, cls: "m-boss" }
-};
-
-// 资源映射
+// 资源映射 (注意：这里不再映射楼梯，因为楼梯在 render 中特殊处理了)
 const ASSET_CLASS = {
-    [ID.WALL]: 'bg-wall', [ID.EMPTY]: 'bg-floor',
-    [ID.STAIR_UP]: 'bg-stairs', [ID.STAIR_DOWN]: 'bg-stairs',
+    [ID.WALL]: 'bg-wall', 
+    [ID.EMPTY]: 'bg-floor',
     [ID.KEY_Y]: 'item-bg i-key-y', [ID.KEY_B]: 'item-bg i-key-b', [ID.KEY_R]: 'item-bg i-key-r',
     [ID.POTION_R]: 'item-bg i-potion-r', [ID.POTION_B]: 'item-bg i-potion-b',
     [ID.GEM_ATK]: 'item-bg i-gem-atk', [ID.GEM_DEF]: 'item-bg i-gem-def',
@@ -46,15 +28,28 @@ const ASSET_CLASS = {
     [ID.HERO]: 'hero-icon'
 };
 
+const MONSTERS = {
+    [ID.SLIME_G]: { name: "绿史莱姆", hp: 35, atk: 18, def: 1, gold: 1, exp: 1, cls: "m-slime-g" },
+    [ID.SLIME_R]: { name: "红史莱姆", hp: 60, atk: 25, def: 5, gold: 2, exp: 2, cls: "m-slime-r" },
+    [ID.BAT]:     { name: "小蝙蝠", hp: 100, atk: 35, def: 10, gold: 5, exp: 3, cls: "m-bat" },
+    [ID.MAGE]:    { name: "大法师", hp: 130, atk: 60, def: 5, gold: 10, exp: 5, cls: "m-mage" },
+    [ID.SKELETON]:{ name: "骷髅人", hp: 150, atk: 70, def: 20, gold: 15, exp: 8, cls: "m-skeleton" },
+    [ID.SKELETON_S]:{ name: "骷髅战士", hp: 250, atk: 120, def: 30, gold: 25, exp: 12, cls: "m-skeleton" },
+    [ID.ORC]:     { name: "兽人", hp: 400, atk: 180, def: 40, gold: 35, exp: 20, cls: "m-orc" },
+    [ID.STONE]:   { name: "石头人", hp: 600, atk: 220, def: 120, gold: 50, exp: 30, cls: "m-boss" },
+    [ID.GHOST]:   { name: "幽灵", hp: 500, atk: 300, def: 5, gold: 45, exp: 28, cls: "m-mage" },
+    [ID.VAMPIRE]: { name: "吸血鬼", hp: 1200, atk: 550, def: 300, gold: 120, exp: 100, cls: "m-bat" },
+    [ID.BOSS]:    { name: "魔王佐斯", hp: 5000, atk: 999, def: 500, gold: 0, exp: 0, cls: "m-boss" }
+};
+
 const M = ID;
 let hero = { floor: 0, x: 6, y: 12, hp: 1000, atk: 10, def: 10, gold: 0, exp: 0, keys: { y: 1, b: 0, r: 0 } };
 let isBattling = false;
 let maps = [];
 
-// 地图数据 (10层)
 function initMaps() {
     maps = [];
-    // Level 1
+    // Level 1: (1,1) 是上楼
     maps.push([
         [1,1,1,1,1,1,1,1,1,1,1,1,1],
         [1,M.STAIR_UP,1,M.GEM_ATK,0,M.SLIME_G,0,M.KEY_Y,1,0,0,0,1],
@@ -70,7 +65,7 @@ function initMaps() {
         [1,0,0,0,0,0,M.HERO,0,0,0,0,0,1], 
         [1,1,1,1,1,1,1,1,1,1,1,1,1]
     ]);
-    // Level 2 (蝙蝠)
+    // Level 2: (1,1) 是下楼
     maps.push([
         [1,1,1,1,1,1,1,1,1,1,1,1,1],
         [1,M.STAIR_DOWN,0,M.DOOR_Y,M.GEM_DEF,0,0,0,M.BAT,0,1,M.STAIR_UP,1],
@@ -86,7 +81,8 @@ function initMaps() {
         [1,M.SWORD,1,0,0,0,0,0,0,1,0,0,1],
         [1,1,1,1,1,1,1,1,1,1,1,1,1]
     ]);
-    // Level 3-10: 简单生成以演示
+    
+    // 生成 Level 3-9
     for(let i=2; i<9; i++) {
         let newMap = JSON.parse(JSON.stringify(maps[1]));
         newMap[1][1] = M.STAIR_DOWN; 
@@ -94,7 +90,7 @@ function initMaps() {
         else { newMap[6][6] = M.MAGE; newMap[4][4] = M.GHOST; }
         maps.push(newMap);
     }
-    // Level 10: Boss
+    // Level 10
     maps.push([
         [1,1,1,1,1,1,1,1,1,1,1,1,1],
         [1,1,1,1,1,M.BOSS,1,1,1,1,1,1,1],
@@ -132,31 +128,49 @@ function render() {
             const cell = document.createElement('div');
             cell.classList.add('cell');
             
-            // 地板
+            // 1. 地形背景
             if(id === M.WALL) cell.classList.add('bg-wall');
             else cell.classList.add('bg-floor');
 
-            // 物体
+            // 2. 核心渲染逻辑
             if (x === hero.x && y === hero.y) {
+                // 勇士
                 const heroDiv = document.createElement('div');
                 heroDiv.classList.add('cell', 'hero-icon');
                 cell.appendChild(heroDiv);
-            } else if (id !== M.EMPTY && id !== M.WALL) {
-                const itemDiv = document.createElement('div');
-                itemDiv.classList.add('cell');
-                
-                if(id >= 40) { // 怪物
-                    itemDiv.classList.add('monster-icon');
+            } 
+            else if (id !== M.EMPTY && id !== M.WALL) {
+                // 如果是楼梯 -> 插入 Emoji (关键修改)
+                if (id === M.STAIR_UP) {
+                    const stair = document.createElement('div');
+                    stair.classList.add('cell', 'stair-emoji');
+                    stair.innerText = '⬆️'; 
+                    cell.appendChild(stair);
+                } 
+                else if (id === M.STAIR_DOWN) {
+                    const stair = document.createElement('div');
+                    stair.classList.add('cell', 'stair-emoji');
+                    stair.innerText = '⬇️'; 
+                    cell.appendChild(stair);
+                }
+                // 如果是怪物
+                else if (id >= 40) {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('cell', 'monster-icon');
                     if(MONSTERS[id]) itemDiv.classList.add(MONSTERS[id].cls);
-                    itemDiv.onmouseenter = () => showMonsterInfo(id);
-                    itemDiv.onmouseleave = () => clearMonsterInfo();
-                } else { // 物品
+                    itemDiv.onclick = (e) => { e.stopPropagation(); openDetailModal(id); };
+                    cell.appendChild(itemDiv);
+                }
+                // 如果是物品 (ID < 40 且不是楼梯)
+                else {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('cell');
                     if(ASSET_CLASS[id]) {
                         const arr = ASSET_CLASS[id].split(' ');
                         arr.forEach(c => itemDiv.classList.add(c));
                     }
+                    cell.appendChild(itemDiv);
                 }
-                cell.appendChild(itemDiv);
             }
             gameMapEl.appendChild(cell);
         }
@@ -176,25 +190,79 @@ function updateUI() {
     document.getElementById('ui-key-r').innerText = hero.keys.r;
 }
 
+// --- 弹窗逻辑 ---
+function openDetailModal(mid) {
+    if(isBattling) return;
+    const m = MONSTERS[mid];
+    const modal = document.getElementById('monster-detail-modal');
+    
+    document.getElementById('detail-m-name').innerText = m.name;
+    document.getElementById('detail-m-img').className = 'big-fighter monster-icon ' + m.cls;
+    document.getElementById('detail-hp').innerText = m.hp;
+    document.getElementById('detail-atk').innerText = m.atk;
+    document.getElementById('detail-def').innerText = m.def;
+    document.getElementById('detail-gold').innerText = m.gold;
+    document.getElementById('detail-exp').innerText = m.exp;
+
+    const dmg = Math.max(hero.atk - m.def, 0);
+    const mDmg = Math.max(m.atk - hero.def, 0);
+    let predHTML = "";
+    
+    if (dmg <= 0) {
+        predHTML = "<span class='text-danger'>❌ 攻击不足，无法破防！</span>";
+    } else {
+        const turns = Math.ceil(m.hp / dmg);
+        const loss = (turns - 1) * mDmg;
+        if (loss >= hero.hp) {
+            predHTML = `<span class='text-danger'>❌ 危险！预计损失 ${loss} HP</span>`;
+        } else if (loss > hero.hp * 0.5) {
+             predHTML = `<span class='text-danger' style='color:#ff0'>⚠️ 困难！预计损失 ${loss} HP</span>`;
+        } else {
+            predHTML = `<span class='text-safe'>✅ 安全，预计损失 ${loss} HP</span>`;
+        }
+    }
+    document.getElementById('detail-prediction').innerHTML = predHTML;
+    modal.classList.remove('hidden');
+}
+
+function closeDetailModal() {
+    document.getElementById('monster-detail-modal').classList.add('hidden');
+}
+
+// --- 移动逻辑 ---
 async function move(dx, dy) {
     if (isBattling) return;
     const tx = hero.x + dx, ty = hero.y + dy;
     if (tx < 0 || tx > 12 || ty < 0 || ty > 12) return;
     const tid = maps[hero.floor][ty][tx];
+    
     if (tid === M.WALL) return;
 
     if (tid >= 40) {
         await startBattle(tx, ty, tid);
-    } else if (tid === M.STAIR_UP && hero.floor < 9) {
-        hero.floor++; hero.x = 0; hero.y = 11; log(`进入第 ${hero.floor+1} 层`); render();
-    } else if (tid === M.STAIR_DOWN && hero.floor > 0) {
-        hero.floor--; hero.x = 0; hero.y = 1; log(`返回第 ${hero.floor+1} 层`); render();
-    } else if (tid !== M.EMPTY) {
-        if (handleItem(tid)) {
-             hero.x = tx; hero.y = ty; maps[hero.floor][ty][tx] = M.EMPTY; render();
+    } 
+    else if (tid === M.STAIR_UP) {
+        if (hero.floor < 9) {
+            hero.floor++; hero.x = 0; hero.y = 11;
+            log(`进入第 ${hero.floor+1} 层`); render();
+        } else {
+            log("已是顶层");
         }
-    } else {
-        hero.x = tx; hero.y = ty; render();
+    } 
+    else if (tid === M.STAIR_DOWN) {
+        if (hero.floor > 0) {
+            hero.floor--; hero.x = 0; hero.y = 1;
+            log(`返回第 ${hero.floor+1} 层`); render();
+        }
+    } 
+    else {
+        if (tid !== M.EMPTY) {
+            if (handleItem(tid)) {
+                 hero.x = tx; hero.y = ty; maps[hero.floor][ty][tx] = M.EMPTY; render();
+            }
+        } else {
+            hero.x = tx; hero.y = ty; render();
+        }
     }
 }
 
@@ -225,8 +293,6 @@ function startBattle(tx, ty, mid) {
         isBattling = true;
         document.getElementById('battle-screen').classList.remove('hidden');
         document.getElementById('battle-monster-name').innerText = m.name;
-        
-        // 设置怪物大图
         const mImg = document.getElementById('battle-monster-img');
         mImg.className = 'big-fighter monster-icon ' + m.cls;
 
@@ -234,7 +300,6 @@ function startBattle(tx, ty, mid) {
         updateBattleUI(curHeroHp, hero.hp, curMonHp, maxMonHp);
         
         const timer = setInterval(() => {
-            // Hero Attack
             const d1 = Math.max(hero.atk - m.def, 0);
             curMonHp -= d1;
             animateDmg('monster', d1);
@@ -247,7 +312,6 @@ function startBattle(tx, ty, mid) {
                 return;
             }
 
-            // Monster Attack
             setTimeout(() => {
                 const d2 = Math.max(m.atk - hero.def, 0);
                 curHeroHp -= d2;
@@ -290,26 +354,6 @@ function winBattle(tx, ty, mid, m) {
         render();
     }, 800);
 }
-
-function showMonsterInfo(mid) {
-    if(isBattling) return;
-    const m = MONSTERS[mid];
-    const dmg = Math.max(hero.atk - m.def, 0);
-    const mDmg = Math.max(m.atk - hero.def, 0);
-    let pred = "安全", cls = "safe";
-    if (dmg <= 0) { pred = "无法战胜"; cls = "danger"; }
-    else {
-        const loss = (Math.ceil(m.hp/dmg)-1) * mDmg;
-        pred = `预计损失: ${loss}`;
-        if(loss >= hero.hp) cls = "danger";
-    }
-    document.getElementById('info-content').innerHTML = `
-        <strong style="color:#fff">${m.name}</strong><br>
-        HP:${m.hp} / ATK:${m.atk} / DEF:${m.def}<br>
-        <span class="${cls}">${pred}</span>
-    `;
-}
-function clearMonsterInfo() { if(!isBattling) document.getElementById('info-content').innerText = "鼠标指向怪物查看"; }
 
 window.addEventListener('keydown', (e) => {
     if(document.getElementById('game-container').style.display === 'none') return;
