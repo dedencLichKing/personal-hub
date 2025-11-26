@@ -62,6 +62,8 @@ canvas {
 .avatar-box {
     text-align: center;
     position: relative;
+    cursor: pointer;
+    pointer-events: auto; /* 允许点击 */
 }
 
 .avatar {
@@ -168,6 +170,7 @@ canvas {
 .hud-bottom {
     padding: 20px;
     text-align: center;
+    pointer-events: auto; /* 允许底部交互 */
 }
 
 .controls-hint {
@@ -417,3 +420,34 @@ p.subtitle {
 
 .stat-box .label { color: #666; font-size: 14px; }
 .stat-box .value { color: var(--accent-gold); font-size: 24px; font-family: monospace; }
+
+/* --- 属性面板网格 --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 10px;
+    text-align: left;
+}
+
+.stats-grid .stat-item {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 3px solid var(--accent-cyan);
+}
+
+.stats-grid .stat-item .label {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+}
+
+.stats-grid .stat-item .value {
+    font-size: 20px;
+    color: var(--text-main);
+    font-family: monospace;
+    font-weight: bold;
+}

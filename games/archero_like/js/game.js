@@ -104,6 +104,7 @@ class Player {
         this.maxHp = 100;
         this.speed = 4;
         this.dmg = 15;
+        this.defense = 0; // 基础防御力
         this.atkSpeed = 30; // 帧间隔 (越小越快)
         this.critRate = 0.05;
         this.pickupRange = 80;
@@ -196,6 +197,12 @@ class Player {
             
             // 播放升级特效
             for(let i=0; i<20; i++) Game.particles.push(new Particle(this.x, this.y, "#ffd700"));
+            
+            // 境界属性成长 (每级提升)
+            this.maxHp += 30;
+            this.hp = this.maxHp; // 升级回满血
+            this.dmg += 5;
+            this.defense += 2;
             
             // 触发选择
             Game.pauseForUpgrade();
@@ -358,6 +365,18 @@ class Enemy {
         this.score = template.score;
         this.expValue = template.exp;
         
+        // 3. 速度动态调整 (根据游戏时间 0-5min, 5-10min, 10-15min)
+        const timePassed = WaveManager.timer - WaveManager.current; // 已进行时间(秒)
+        let speedFactor = 1.0;
+        if (timePassed < 300) { // 0-5分钟
+            speedFactor = 0.6;
+        } else if (timePassed < 600) { // 5-10分钟
+            speedFactor = 0.8;
+        } else { // 10分钟后
+            speedFactor = 1.0;
+        }
+        this.speed *= speedFactor;
+        
         this.dead = false;
     }
 
@@ -370,11 +389,15 @@ class Enemy {
 
         // 撞击玩家
         if (Utils.checkCollide(this, p)) {
-            p.hp -= (this.rank === 'boss' ? 50 : 10);
+            const baseDmg = (this.rank === 'boss' ? 50 : 10);
+            // 计算防御减免，至少造成1点伤害
+            const finalDmg = Math.max(1, baseDmg - p.defense);
+            
+            p.hp -= finalDmg;
             this.dead = true; // 撞击后自爆 (Boss除外)
             if (this.rank === 'boss') this.dead = false; // Boss 撞人不死
             
-            UI.floatText(p.x, p.y, "痛!", "#ff0000");
+            UI.floatText(p.x, p.y, `-${Math.floor(finalDmg)}`, "#ff0000");
             UI.updateStatus();
             
             if (p.hp <= 0) Game.gameOver();
@@ -563,8 +586,8 @@ const WaveManager = {
             this.current -= 1 / 60; // 假设60fps
             
             // 更新 UI 倒计时
-            const m = Math.floor(this.current / 60).toString().padStart(2, '0');
-            const s = Math.floor(this.current % 60).toString().padStart(2, '0');
+            const m = Math.max(0, Math.floor(this.current / 60)).toString().padStart(2, '0');
+            const s = Math.max(0, Math.floor(this.current % 60)).toString().padStart(2, '0');
             document.getElementById("game-timer").innerText = `${m}:${s}`;
 
             // 波次逻辑
@@ -618,6 +641,17 @@ const Game = {
         window.addEventListener("resize", () => this.resize());
         this.resize();
         
+        // 绑定头像点击事件
+        document.querySelector('.avatar-box').addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止触发其他点击
+            UI.toggleStats();
+        });
+
+        // 绑定属性面板关闭
+        document.getElementById('stats-screen').addEventListener('click', () => {
+            UI.toggleStats();
+        });
+
         // 输入监听
         window.addEventListener("keydown", e => {
             if(e.key === "w" || e.key === "ArrowUp") Input.up = true;
@@ -658,6 +692,19 @@ const Game = {
         
         document.getElementById("select-screen").classList.add("hidden");
         document.getElementById("hud-layer").style.display = "flex";
+        
+        // 检查新手引导
+        if (!localStorage.getItem("mortal_cultivation_tutorial")) {
+            this.state = "PAUSED";
+            document.getElementById("tutorial-screen").classList.remove("hidden");
+            localStorage.setItem("mortal_cultivation_tutorial", "true");
+        } else {
+            this.state = "PLAYING";
+        }
+    },
+
+    closeTutorial() {
+        document.getElementById("tutorial-screen").classList.add("hidden");
         this.state = "PLAYING";
     },
 
@@ -681,7 +728,13 @@ const Game = {
         const realmName = REALMS[this.player.realmIdx].name;
         document.getElementById("end-realm").innerText = realmName;
         document.getElementById("end-kills").innerText = this.score;
-        document.getElementById("end-time").innerText = document.getElementById("game-timer").innerText;
+        
+        // 计算存活时间 (总时长 - 剩余时长)
+        const survivalTime = WaveManager.timer - Math.max(0, WaveManager.current);
+        const m = Math.floor(survivalTime / 60).toString().padStart(2, '0');
+        const s = Math.floor(survivalTime % 60).toString().padStart(2, '0');
+        document.getElementById("end-time").innerText = `${m}:${s}`;
+        
         document.getElementById("game-over-screen").classList.remove("hidden");
     },
     
@@ -806,6 +859,33 @@ const UI = {
         });
         
         document.getElementById("upgrade-screen").classList.remove("hidden");
+    },
+
+    toggleStats() {
+        const statsScreen = document.getElementById("stats-screen");
+        if (statsScreen.classList.contains("hidden")) {
+            // 显示面板，刷新数据
+            const p = Game.player;
+            if (!p) return;
+            
+            document.getElementById("stat-atk").innerText = Math.floor(p.dmg);
+            document.getElementById("stat-def").innerText = Math.floor(p.defense);
+            document.getElementById("stat-hp").innerText = `${Math.floor(p.hp)}/${Math.floor(p.maxHp)}`;
+            document.getElementById("stat-crit").innerText = `${Math.floor(p.critRate * 100)}%`;
+            document.getElementById("stat-speed").innerText = p.speed.toFixed(1);
+            document.getElementById("stat-atk-speed").innerText = `${(60/p.atkSpeed).toFixed(1)}/s`;
+            
+            statsScreen.classList.remove("hidden");
+            // 暂停游戏（可选，为了安全查看属性建议暂停）
+            if (Game.state === "PLAYING") Game.togglePause();
+        } else {
+            statsScreen.classList.add("hidden");
+            // 如果是因为查看属性暂停的，可以在这里恢复，但通常让用户手动恢复或保持暂停逻辑一致更好
+            // 这里我们保持简单的 togglePause 逻辑，如果上面暂停了，用户需要手动点击恢复或者再次点击头像？
+            // 更好的体验是：如果当前是 PAUSED 且是因为打开面板暂停的，关闭时恢复。
+            // 简化处理：仅仅切换显示，暂停逻辑由 Game.togglePause() 统一管理，这里只负责显示。
+            // 为了防止意外死亡，打开属性面板强制暂停是比较好的。
+        }
     }
 };
 
