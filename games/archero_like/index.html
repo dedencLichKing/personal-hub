@@ -17,7 +17,7 @@
         <div class="hud-top">
             <!-- 左侧：状态与境界 -->
             <div class="player-status">
-                <div class="avatar-box">
+                <div class="avatar-box" style="cursor: pointer;" title="点击查看属性">
                     <div class="avatar">🤺</div>
                     <div class="realm-badge" id="realm-display">练气初期</div>
                 </div>
@@ -53,6 +53,60 @@
             </div>
             <div class="controls-hint">
                 WASD 移动 | 自动攻击
+            </div>
+        </div>
+    </div>
+
+    <!-- 0. 属性面板 -->
+    <div id="stats-screen" class="modal-overlay hidden" style="z-index: 200;">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2>道友属性</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="label">攻击力</span>
+                    <span class="value" id="stat-atk">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">防御力</span>
+                    <span class="value" id="stat-def">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">生命值</span>
+                    <span class="value" id="stat-hp">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">暴击率</span>
+                    <span class="value" id="stat-crit">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">移速</span>
+                    <span class="value" id="stat-speed">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">攻速</span>
+                    <span class="value" id="stat-atk-speed">--</span>
+                </div>
+            </div>
+            <p class="subtitle" style="margin-top: 20px; font-size: 12px;">(点击任意处关闭)</p>
+        </div>
+    </div>
+
+    <!-- 0.5 新手引导 -->
+    <div id="tutorial-screen" class="modal-overlay hidden" style="z-index: 300;">
+        <div class="modal-content" style="max-width: 500px; text-align: left;">
+            <h2 style="text-align: center; color: var(--accent-gold);">修仙指南</h2>
+            <div style="margin: 20px 0; line-height: 1.8; color: #ccc;">
+                <p>道友请留步，此乃修仙界生存法则：</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li>🏃 <strong>身法：</strong> 使用 <span style="color:var(--accent-cyan)">WASD</span> 或 <span style="color:var(--accent-cyan)">方向键</span> 移动 (手机端拖拽)。</li>
+                    <li>⚔️ <strong>御剑：</strong> 角色会自动锁定并攻击最近的敌人。</li>
+                    <li>📊 <strong>内视：</strong> 点击左上角 <span style="color:var(--accent-cyan)">头像</span> 可查看详细属性面板。</li>
+                    <li>🧘 <strong>修行：</strong> 击杀妖兽获取灵气，积满后可突破境界，选择强力神通。</li>
+                </ul>
+                <p style="text-align: center; margin-top: 20px; color: var(--accent-red);">目标：存活 15 分钟，击败魔尊！</p>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn" onclick="Game.closeTutorial()">吾已通晓</button>
             </div>
         </div>
     </div>
